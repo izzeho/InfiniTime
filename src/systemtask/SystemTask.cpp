@@ -266,19 +266,23 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
+          motorController.RunForDuration(250);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.RunForDuration(35);
+          motorController.RunForDuration(250);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::BleConnected:
           ReloadIdleTimer();
           isBleDiscoveryTimerRunning = true;
           bleDiscoveryTimer = 5;
+          if (isSleeping && !isWakingUp)
+            GoToRunning();
+          motorController.RunForDuration(250);
           break;
         case Messages::BleFirmwareUpdateStarted:
           doNotGoToSleep = true;
@@ -325,7 +329,7 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          motorController.RunForDuration(15);
+          motorController.RunForDuration(200);
 	  // Battery level is updated on every message - there's no need to do anything
           break;
 
@@ -338,7 +342,10 @@ void SystemTask::Work() {
       if (bleDiscoveryTimer == 0) {
         isBleDiscoveryTimerRunning = false;
         // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
-        // tharget and vice-versa. I'm not sure if this is the right way to handle this...
+        // target and vice-versa. I'm not sure if this is the right way to handle this...
+        if (isSleeping && !isWakingUp)
+          GoToRunning();
+        motorController.RunForDuration(250);
         nimbleController.StartDiscovery();
       } else {
         bleDiscoveryTimer--;
