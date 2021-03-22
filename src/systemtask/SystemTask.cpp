@@ -266,14 +266,14 @@ void SystemTask::Work() {
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
+          motorController.SetDuration(250);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::NewNotification);
           break;
         case Messages::OnTimerDone:
           if (isSleeping && !isWakingUp) {
             GoToRunning();
           }
-          motorController.SetDuration(35);
+          motorController.SetDuration(250);
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::TimerDone);
           break;
         case Messages::BleConnected:
@@ -326,7 +326,7 @@ void SystemTask::Work() {
           stepCounterMustBeReset = true;
           break;
         case Messages::OnChargingEvent:
-          motorController.SetDuration(15);
+          motorController.SetDuration(200);
 	  // Battery level is updated on every message - there's no need to do anything
           break;
 
