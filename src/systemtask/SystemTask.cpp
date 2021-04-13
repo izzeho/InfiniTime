@@ -340,6 +340,7 @@ void SystemTask::Work() {
         isBleDiscoveryTimerRunning = false;
         // Services discovery is deffered from 3 seconds to avoid the conflicts between the host communicating with the
         // tharget and vice-versa. I'm not sure if this is the right way to handle this...
+        motorController.SetDuration(250);
         nimbleController.StartDiscovery();
       } else {
         bleDiscoveryTimer--;
