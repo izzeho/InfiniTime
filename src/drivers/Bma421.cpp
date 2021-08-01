@@ -35,6 +35,22 @@ Bma421::Bma421(TwiMaster& twiMaster, uint8_t twiAddress) : twiMaster {twiMaster}
 }
 
 void Bma421::Init() {
+
+  // REG5, BOOT
+  uint8_t data = 0x80;
+  Write(0x24, &data, 1);
+
+  nrf_delay_us(10);
+
+  // REG1, ODR = 100Hz
+  data = 0x5F;
+  Write(0x20, &data, 1);
+
+  // REG4 - BDU block data update
+  data = 0x80;
+  Write(0x23, &data, 1);
+
+  /*
   if (not isResetOk)
     return; // Call SoftReset (and reset TWI device) first!
 
@@ -76,7 +92,7 @@ void Bma421::Init() {
   ret = bma4_set_accel_config(&accel_conf, &bma);
   if (ret != BMA4_OK)
     return;
-
+*/
   isOk = true;
 }
 
@@ -94,20 +110,34 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
 }
 
 Bma421::Values Bma421::Process() {
-  if (not isOk)
-    return {};
+/*  if (not isOk)
+    return {};*/
   struct bma4_accel data;
-  bma4_read_accel_xyz(&data, &bma);
+  //bma4_read_accel_xyz(&data, &bma);
+
+  uint8_t acc[6];
+  Read(0x28 | 0x80, acc, 6);
+
+  int16_t x = (int8_t)(acc[1]);
+  int16_t y = (int8_t)(acc[3]);
+  int16_t z = (int8_t)(acc[5]);
+
+  //2g ~ 2000mg
+  data.x = ((x * 2000) / 256);
+  data.y = ((y * 2000) / 256);
+  data.z = ((z * 2000) / 256);
 
   uint32_t steps = 0;
-  bma423_step_counter_output(&steps, &bma);
+  //bma423_step_counter_output(&steps, &bma);
 
-  int32_t temperature;
-  bma4_get_temperature(&temperature, BMA4_DEG, &bma);
-  temperature = temperature / 1000;
+  steps = 0;
 
-  uint8_t activity = 0;
-  bma423_activity_output(&activity, &bma);
+  //int32_t temperature;
+  //bma4_get_temperature(&temperature, BMA4_DEG, &bma);
+  //temperature = temperature / 1000;
+
+  //uint8_t activity = 0;
+  //bma423_activity_output(&activity, &bma);
 
   // X and Y axis are swapped because of the way the sensor is mounted in the PineTime
   return {steps, data.y, data.x, data.z};
