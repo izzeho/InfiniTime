@@ -109,6 +109,39 @@ void Bma421::Write(uint8_t registerAddress, const uint8_t* data, size_t size) {
   twiMaster.Write(deviceAddress, registerAddress, data, size);
 }
 
+int16_t average(int16_t *items, uint8_t len)
+{
+  int16_t sum = 0;
+
+  for(int i = 0; i < len; i++)
+  {
+    sum += items[i];
+  }
+
+  return sum / len;
+}
+
+void filter(int16_t *x, int16_t *y, int16_t *z)
+{
+  #define FILTER_SIZE 4
+  static int16_t filter[3][FILTER_SIZE];
+  static uint8_t filter_item = 0;
+
+  filter[0][filter_item] = *x;
+  filter[1][filter_item] = *y;
+  filter[2][filter_item] = *z;
+
+  filter_item++;
+  if (filter_item == FILTER_SIZE)
+  {
+    filter_item = 0;
+  }
+
+  *x = average(filter[0], FILTER_SIZE);
+  *y = average(filter[1], FILTER_SIZE);
+  *z = average(filter[2], FILTER_SIZE);
+}
+
 Bma421::Values Bma421::Process() {
 /*  if (not isOk)
     return {};*/
@@ -122,6 +155,11 @@ Bma421::Values Bma421::Process() {
   int16_t y = (int8_t)(acc[3]);
   int16_t z = (int8_t)(acc[5]);
 
+  // Filter
+  // --------------
+  filter(&x, &y, &z);
+
+
   //2g ~ 2000mg
   data.x = ((x * 2000) / 256);
   data.y = ((y * 2000) / 256);
@@ -130,7 +168,6 @@ Bma421::Values Bma421::Process() {
   uint32_t steps = 0;
   //bma423_step_counter_output(&steps, &bma);
 
-  steps = 0;
 
   //int32_t temperature;
   //bma4_get_temperature(&temperature, BMA4_DEG, &bma);
