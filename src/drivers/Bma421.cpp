@@ -43,7 +43,9 @@ void Bma421::Init() {
   nrf_delay_us(10);
 
   // REG1, ODR = 100Hz
-  data = 0x5F;
+  //data = 0x5F;
+  // REG1, ODR = 50Hz (in low power it should be dividet to 25 Hz, Infintime is reading 10 Hz)
+  data = 0x4F;
   Write(0x20, &data, 1);
 
   // REG4 - BDU block data update
@@ -159,11 +161,13 @@ Bma421::Values Bma421::Process() {
   // --------------
   filter(&x, &y, &z);
 
+  // Compared to PineTime my accelerometer has twice lower the X,Y,Z values in the accelerometer graph app
+  // so instead of what I thin is "proper" dividing by 255 I divide here 128.
 
   //2g ~ 2000mg
-  data.x = ((x * 2000) / 256);
-  data.y = ((y * 2000) / 256);
-  data.z = ((z * 2000) / 256);
+  data.x = ((x * 2000) / 128);
+  data.y = ((y * 2000) / 128);
+  data.z = ((z * 2000) / 128);
 
   uint32_t steps = 0;
   //bma423_step_counter_output(&steps, &bma);
