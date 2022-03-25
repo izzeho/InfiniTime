@@ -801,18 +801,20 @@ add_definitions(-D__HEAP_SIZE=4096)
 
 # Debug configuration
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
-        message("Debugging via RTT enabled")
         add_definitions(-DDEBUG)
         add_definitions(-DDEBUG_NRF_USER)
+
         # NRF SDK Logging
         add_definitions(-DNRF_LOG_ENABLED=1)
-        add_definitions(-DNRF_LOG_BACKEND_RTT_ENABLED=1)
-        add_definitions(-DNRF_LOG_BACKEND_SERIAL_USES_RTT=1)
+        # add_definitions(-DNRF_LOG_BACKEND_RTT_ENABLED=1)
+        # add_definitions(-DNRF_LOG_BACKEND_SERIAL_USES_RTT=1)
+
         # NRF SDK individual modules logging
         # add_definitions(-DCLOCK_CONFIG_LOG_ENABLED=1)
         # add_definitions(-DCLOCK_CONFIG_LOG_LEVEL=4)
         # add_definitions(-DRTC_CONFIG_LOG_ENABLED=1)
         # add_definitions(-DRTC_CONFIG_LOG_LEVEL=4)
+
         # Nimble Logging
         add_definitions(-DMYNEWT_VAL_NEWT_FEATURE_LOGCFG=1)
         # add_definitions(-DMYNEWT_VAL_LOG_LEVEL=0)
