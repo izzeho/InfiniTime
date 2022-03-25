@@ -796,9 +796,21 @@ add_definitions(-D__STACK_SIZE=1024)
 add_definitions(-D__HEAP_SIZE=4096)
 add_definitions(-DMYNEWT_VAL_BLE_LL_RFMGMT_ENABLE_TIME=1500)
 
-# NOTE : Add the following defines to enable debug mode of the NRF SDK:
-#add_definitions(-DDEBUG)
-#add_definitions(-DDEBUG_NRF_USER)
+# Target hardware configuration options
+add_definitions(-DTARGET_DEVICE_${TARGET_DEVICE})
+if(LF_CLK STREQUAL "RC")
+  add_definitions(-DCLOCK_CONFIG_LF_SRC=0)
+  # The LF RC clock source has a precision of 500ppm
+  add_definitions(-DMYNEWT_VAL_BLE_LL_SCA=500)
+  add_definitions(-DCLOCK_CONFIG_LF_CAL_ENABLED=1)
+elseif(LF_CLK STREQUAL "XTAL")
+  add_definitions(-DCLOCK_CONFIG_LF_SRC=1)
+elseif(LF_CLK STREQUAL "SYNT")
+  add_definitions(-DCLOCK_CONFIG_LF_SRC=2)
+else()
+  message(FATAL_ERROR "Invalid LF_CLK")
+endif()
+add_definitions(-DDRIVER_ACC_${DRIVER_ACC})
 
 # Debug configuration
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
