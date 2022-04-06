@@ -687,6 +687,7 @@ set(INCLUDE_FILES
         components/timer/TimerController.h
         components/alarm/AlarmController.h
         drivers/Cst816s.h
+        drivers/Cst816s_registers.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
         libs/date/includes/date/tz.h
@@ -834,6 +835,7 @@ else()
   message(FATAL_ERROR "Invalid LF_CLK")
 endif()
 add_definitions(-DDRIVER_ACC_${DRIVER_ACC})
+add_definitions(-DDRIVER_TOUCH_${DRIVER_TOUCH})
 
 # Debug configuration
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")

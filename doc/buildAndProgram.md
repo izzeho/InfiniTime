@@ -38,6 +38,7 @@ CMake configures the project according to variables you specify the command line
 **TARGET_DEVICE**|Target device, used for pin map. Allowed: `PINETIME, P8`|`-DTARGET_DEVICE=PINETIME` (Default)
 **LF_CLK**|Configures the LF clock source. Allowed: `RC, XTAL, SYNT`|`-DLF_CLK=XTAL` (Default)
 **DRIVER_ACC**|Acceleration sensor driver selection. Allowed: `BMA421, SC7A20`|`-DDRIVER_ACC=BMA421` (Default)
+**DRIVER_TOUCH**|Touch sensor driver factory configuration selection. Allowed: `DYNAMIC, GESTURE, REPORT`|`-DDRIVER_TOUCH=DYNAMIC` (Default)
 
 ####(**) Note about **CMAKE_BUILD_TYPE**:
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
