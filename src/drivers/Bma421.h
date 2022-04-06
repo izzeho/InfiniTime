@@ -19,6 +19,8 @@ namespace Pinetime {
       void Init();
       AccelerationValues Process();
       void ResetStepCounter();
+      void SetMotion(MotionEvents event);
+      MotionEvents GetMotionInfo();
 
     private:
       bool isResetOk = false;

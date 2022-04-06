@@ -53,12 +53,27 @@ void Bma421::Init() {
   if (ret != BMA4_OK) return;
 
   // Enable step counter and accelerometer, disable step detector
-  ret = bma423_feature_enable(BMA423_STEP_CNTR, 1, &bma);
+  ret = bma423_feature_enable(BMA423_STEP_CNTR | BMA423_SINGLE_TAP | BMA423_DOUBLE_TAP, 1, &bma);
   if (ret != BMA4_OK) return;
   ret = bma423_step_detector_enable(0, &bma);
   if (ret != BMA4_OK) return;
   ret = bma4_set_accel_enable(1, &bma);
   if (ret != BMA4_OK) return;
+
+  // Configure tap sensitivity
+  if(bma423_single_tap_set_sensitivity(0, &bma) != BMA4_OK) return;
+  if(bma423_double_tap_set_sensitivity(0, &bma) != BMA4_OK) return;
+
+  // Configure and enable interrupt INT1
+  if(bma4_set_interrupt_mode(BMA4_LATCH_MODE, &bma) != BMA4_OK) return;
+  struct bma4_int_pin_config int_config;
+  int_config.edge_ctrl = BMA4_LEVEL_TRIGGER;
+  int_config.lvl = BMA4_ACTIVE_LOW;
+  int_config.od = BMA4_OPEN_DRAIN;
+  int_config.output_en = BMA4_OUTPUT_ENABLE;
+  int_config.input_en = BMA4_INPUT_DISABLE;
+  if(bma4_set_int_pin_config(&int_config, BMA4_INTR1_MAP, &bma) != BMA4_OK) return;
+  SetMotion(MotionEvents::None);
 
   // Configure FIFO
   ret = bma4_set_fifo_config(BMA4_FIFO_ACCEL, 1, &bma);
@@ -126,4 +141,32 @@ void Bma421::SoftReset() {
     isResetOk = true;
     nrf_delay_ms(1);
   }
+}
+
+void Bma421::SetMotion(MotionEvents event) {
+  #if defined(DRIVER_WAKE_ACC)
+    uint8_t map = 0;
+    if(event == MotionEvents::SingleTap) {
+      map = BMA423_SINGLE_TAP_INT;
+    } else if(event == MotionEvents::DoubleTap) {
+      map = BMA423_DOUBLE_TAP_INT;
+    }
+
+    bma423_map_interrupt(BMA4_INTR1_MAP, map, 1, &bma);
+  #endif
+}
+
+MotionEvents Bma421::GetMotionInfo() {
+  #if defined(DRIVER_WAKE_ACC)
+    uint16_t int_status = 0;
+    if (bma423_read_int_status(&int_status, &bma) == BMA4_OK) {
+      if (int_status & BMA423_SINGLE_TAP_INT) {
+        return MotionEvents::SingleTap;
+      } else if (int_status & BMA423_DOUBLE_TAP_INT) {
+        return MotionEvents::DoubleTap;
+      }
+    }
+  #endif
+
+  return MotionEvents::None;
 }
