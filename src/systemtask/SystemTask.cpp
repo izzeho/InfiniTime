@@ -62,7 +62,7 @@ SystemTask::SystemTask(Drivers::SpiMaster& spi,
                        Pinetime::Controllers::MotorController& motorController,
                        Pinetime::Drivers::Hrs3300& heartRateSensor,
                        Pinetime::Controllers::MotionController& motionController,
-                       Pinetime::Drivers::Bma421& motionSensor,
+                       Pinetime::Drivers::AccelerationSensor& motionSensor,
                        Controllers::Settings& settingsController,
                        Pinetime::Controllers::HeartRateController& heartRateController,
                        Pinetime::Applications::DisplayApp& displayApp,
@@ -493,8 +493,7 @@ void SystemTask::UpdateMotion() {
 
   auto motionValues = motionSensor.Process();
 
-  motionController.IsSensorOk(motionSensor.IsOk());
-  motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
+  motionController.IsSensorOk(motionSensor.IsInitialized());
 
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
       motionController.Should_RaiseWake(isSleeping)) {
