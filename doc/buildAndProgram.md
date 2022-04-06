@@ -39,13 +39,14 @@ CMake configures the project according to variables you specify the command line
 **LF_CLK**|Configures the LF clock source. Allowed: `RC, XTAL, SYNT`|`-DLF_CLK=XTAL` (Default)
 **DRIVER_ACC**|Acceleration sensor driver selection. Allowed: `BMA421, SC7A20`|`-DDRIVER_ACC=BMA421` (Default)
 **DRIVER_TOUCH**|Touch sensor driver factory configuration selection. Allowed: `DYNAMIC, GESTURE, REPORT`|`-DDRIVER_TOUCH=DYNAMIC` (Default)
+**DRIVER_WAKE**|Which sensor to use for tap to wake events. `ACC` is only implemented for the SC7A20. Allowed: `TOUCH, ACC`|`-DDRIVER_WAKE=TOUCH` (Default)
 
-####(**) Note about **CMAKE_BUILD_TYPE**:
+#### (**) Note about **CMAKE_BUILD_TYPE**:
 By default, this variable is set to *Release*. It compiles the code with size and speed optimizations. We use this value for all the binaries we publish when we [release](https://github.com/InfiniTimeOrg/InfiniTime/releases) new versions of InfiniTime.
 
 The *Debug* mode disables all optimizations, which makes the code easier to debug. However, the binary size will likely be too big to fit in the internal flash memory. If you want to build and debug a *Debug* binary, you'll need to disable some parts of the code. For example, the icons for the **Navigation** app use a lot of memory space. You can comment the content of `m_iconMap` in the [Navigation](https://github.com/InfiniTimeOrg/InfiniTime/blob/develop/src/displayapp/screens/Navigation.h#L148) application to free some memory.
 
-####(**) Note about **BUILD_DFU**:
+#### (**) Note about **BUILD_DFU**:
 DFU files are the files you'll need to install your build of InfiniTime using OTA (over-the-air) mecanism. To generate the DFU file, the Python tool [adafruit-nrfutil](https://github.com/adafruit/Adafruit_nRF52_nrfutil) is needed on your system. Check that this tool is properly installed before enabling this option.
 
 #### CMake command line for JLink

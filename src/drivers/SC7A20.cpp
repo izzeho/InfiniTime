@@ -29,27 +29,29 @@ void SC7A20::Init() {
   data = CTRL_REG4_FS_2G;
   Write(CTRL_REG4, &data, 1);
 
-  // Enable high pass filter for click detection
-  data = CTRL_REG2_HPCLICK;
-  Write(CTRL_REG2, &data, 1);
+  #if defined(DRIVER_WAKE_ACC)
+    // Enable high pass filter for click detection
+    data = CTRL_REG2_HPCLICK;
+    Write(CTRL_REG2, &data, 1);
 
-  // Enable click event on interrupt function 1 and pin 1
-  data = CTRL_REG3_I1_CLICK;
-  Write(CTRL_REG3, &data, 1);
-  // Set interrupt to active low
-  data = CTRL_REG6_H_LACTIVE;
-  Write(CTRL_REG6, &data, 1);
+    // Enable click event on interrupt function 1 and pin 1
+    data = CTRL_REG3_I1_CLICK;
+    Write(CTRL_REG3, &data, 1);
+    // Set interrupt to active low
+    data = CTRL_REG6_H_LACTIVE;
+    Write(CTRL_REG6, &data, 1);
 
-  // Configure click treshold, latch interrupt and timings
-
-  data = SC7A20_click_treshold | CLICK_THS_LIR_CLICK;
-  Write(CLICK_THS, &data, 1);
-  data = SC7A20_click_time_limit;
-  Write(TIME_LIMIT, &data, 1);
-  data = SC7A20_click_latency;
-  Write(TIME_LATENCY, &data, 1);
-  data = SC7A20_click_window;
-  Write(TIME_WINDOW, &data, 1);
+    // Configure click treshold, latch interrupt and timings
+    SetMotion(MotionEvents::None);
+    data = SC7A20_click_treshold | CLICK_THS_LIR_CLICK;
+    Write(CLICK_THS, &data, 1);
+    data = SC7A20_click_time_limit;
+    Write(TIME_LIMIT, &data, 1);
+    data = SC7A20_click_latency;
+    Write(TIME_LATENCY, &data, 1);
+    data = SC7A20_click_window;
+    Write(TIME_WINDOW, &data, 1);
+  #endif
 
   // Enable block update, configure resolution mode
   data = CTRL_REG4_BDU;
@@ -110,4 +112,33 @@ AccelerationValues SC7A20::Process() {
 
   // Step counting is not implemented
   return { 0, avgs[0], avgs[1], avgs[2], (int16_t*)fifo, length };
+}
+
+void SC7A20::SetMotion(MotionEvents event) {
+  // Configure axis to measure for click detection
+  #if defined(DRIVER_WAKE_ACC)
+    uint8_t data = 0;
+    if(event == MotionEvents::SingleTap) {
+      data = CLICK_CFG_ZS;
+    } else if(event == MotionEvents::DoubleTap) {
+      data = CLICK_CFG_ZD;
+    }
+    Write(CLICK_CFG, &data, 1);
+  #endif
+}
+
+MotionEvents SC7A20::GetMotionInfo() {
+  #if defined(DRIVER_WAKE_ACC)
+    uint8_t click_source = 0;
+    Read(CLICK_SRC, &click_source, 1);
+
+    // Check if an event (into the correct direction) has been generated
+    if(click_source & CLICK_SRC_IA && !(click_source & CLICK_SRC_SIGN)) {
+      // Double tap takes precedence over single tap
+      if(click_source & CLICK_SRC_DCLICK) return MotionEvents::DoubleTap;
+      if(click_source & CLICK_SRC_SCLICK) return MotionEvents::SingleTap;
+    }
+  #endif
+
+  return MotionEvents::None;
 }

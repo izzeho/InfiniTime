@@ -96,14 +96,16 @@ Cst816S::TouchInfos Cst816S::GetTouchInfo() {
 void Cst816S::Sleep() {
   // This only controls the CST716, the CST816S will ignore this register.
   // The CST816S power state is managed using auto-sleep.
-
-  static constexpr uint8_t sleepValue = PWR_MODE_DEEP_SLEEP;
-  twiMaster.Write(twiAddress, PWR_MODE_CST716, &sleepValue, 1);
-
+  #if !defined(DRIVER_WAKE_TOUCH)
+    static constexpr uint8_t sleepValue = PWR_MODE_DEEP_SLEEP;
+    twiMaster.Write(twiAddress, PWR_MODE_CST716, &sleepValue, 1);
+  #endif
   NRF_LOG_INFO("[TOUCHPANEL] Sleep");
 }
 
 void Cst816S::Wakeup() {
-  Init();
+  #if !defined(DRIVER_WAKE_TOUCH)
+    Init();
+  #endif
   NRF_LOG_INFO("[TOUCHPANEL] Wakeup");
 }

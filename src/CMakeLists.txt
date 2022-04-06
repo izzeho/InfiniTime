@@ -843,6 +843,7 @@ else()
 endif()
 add_definitions(-DDRIVER_ACC_${DRIVER_ACC})
 add_definitions(-DDRIVER_TOUCH_${DRIVER_TOUCH})
+add_definitions(-DDRIVER_WAKE_${DRIVER_WAKE})
 
 # Debug configuration
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")

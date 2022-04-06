@@ -3,6 +3,7 @@
 #include <bitset>
 #include "components/brightness/BrightnessController.h"
 #include "components/fs/FS.h"
+#include "drivers/AccelerationSensor.h"
 
 namespace Pinetime {
   namespace Controllers {
@@ -42,7 +43,7 @@ namespace Pinetime {
         Colors ColorBG = Colors::Black;
       };
 
-      Settings(Pinetime::Controllers::FS& fs);
+      Settings(Pinetime::Controllers::FS& fs, Pinetime::Drivers::AccelerationSensor& acc);
 
       void Init();
       void SaveSettings();
@@ -170,6 +171,8 @@ namespace Pinetime {
               break;
           }
         }
+
+        uploadWakeUpMode();
       };
 
       std::bitset<4> getWakeUpModes() const {
@@ -212,6 +215,7 @@ namespace Pinetime {
 
     private:
       Pinetime::Controllers::FS& fs;
+      Pinetime::Drivers::AccelerationSensor& acc;
 
       static constexpr uint32_t settingsVersion = 0x0003;
       struct SettingsData {
@@ -244,6 +248,8 @@ namespace Pinetime {
 
       void LoadSettingsFromFile();
       void SaveSettingsToFile();
+
+      void uploadWakeUpMode();
     };
   }
 }

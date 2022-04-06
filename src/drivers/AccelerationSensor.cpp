@@ -16,6 +16,12 @@ namespace Pinetime {
 
         void AccelerationSensor::ResetStepCounter() { }
 
+        void AccelerationSensor::SetMotion(MotionEvents event) { }
+        
+        MotionEvents AccelerationSensor::GetMotionInfo() {
+            return MotionEvents::None;
+        }
+
         void AccelerationSensor::Read(uint8_t registerAddress, uint8_t* buffer, size_t size) {
             twiMaster.Read(deviceAddress, registerAddress, buffer, size);
         }

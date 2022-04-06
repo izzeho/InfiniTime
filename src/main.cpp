@@ -112,7 +112,7 @@ Pinetime::Controllers::HeartRateController heartRateController;
 Pinetime::Applications::HeartRateTask heartRateApp(heartRateSensor, heartRateController);
 
 Pinetime::Controllers::FS fs {spiNorFlash};
-Pinetime::Controllers::Settings settingsController {fs};
+Pinetime::Controllers::Settings settingsController {fs, motionSensor};
 Pinetime::Controllers::MotorController motorController {};
 
 Pinetime::Controllers::DateTime dateTimeController {settingsController};
@@ -182,10 +182,12 @@ void nrfx_gpiote_evt_handler(nrfx_gpiote_pin_t pin, nrf_gpiote_polarity_t action
   if (pin == Pinetime::PinMap::Cst816sIrq) {
     systemTask.OnTouchEvent();
     return;
+  } else if(pin == Pinetime::PinMap::Bma421Irq) {
+    systemTask.OnMotionEvent();
+    return;
   }
 
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
   if (pin == Pinetime::PinMap::PowerPresent and action == NRF_GPIOTE_POLARITY_TOGGLE) {
     xTimerStartFromISR(debounceChargeTimer, &xHigherPriorityTaskWoken);
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);

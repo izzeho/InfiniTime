@@ -4,7 +4,7 @@
 
 using namespace Pinetime::Controllers;
 
-Settings::Settings(Pinetime::Controllers::FS& fs) : fs {fs} {
+Settings::Settings(Pinetime::Controllers::FS& fs, Pinetime::Drivers::AccelerationSensor& acc) : fs {fs}, acc {acc} {
 }
 
 void Settings::Init() {
@@ -34,6 +34,8 @@ void Settings::LoadSettingsFromFile() {
   if ( bufferSettings.version == settingsVersion ) {
     settings = bufferSettings;
   }
+
+  uploadWakeUpMode();
 }
 
 void Settings::SaveSettingsToFile() {
@@ -44,4 +46,15 @@ void Settings::SaveSettingsToFile() {
   }
   fs.FileWrite(&settingsFile, reinterpret_cast<uint8_t*>(&settings), sizeof(settings));
   fs.FileClose(&settingsFile);
+}
+
+void Settings::uploadWakeUpMode() {
+  // Setup the motion sensor interrupt configuration
+  if(isWakeUpModeOn(Settings::WakeUpMode::DoubleTap)) {
+    acc.SetMotion(Drivers::MotionEvents::DoubleTap);
+  } else if(isWakeUpModeOn(Settings::WakeUpMode::SingleTap)) {
+    acc.SetMotion(Drivers::MotionEvents::SingleTap);
+  } else {
+    acc.SetMotion(Drivers::MotionEvents::None);
+  }
 }

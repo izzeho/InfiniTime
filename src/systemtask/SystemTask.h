@@ -82,6 +82,7 @@ namespace Pinetime {
       void PushMessage(Messages msg);
 
       void OnTouchEvent();
+      void OnMotionEvent();
 
       void OnIdle();
       void OnDim();

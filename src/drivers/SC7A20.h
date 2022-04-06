@@ -21,6 +21,8 @@ namespace Pinetime {
 
       void Init();
       AccelerationValues Process();
+      void SetMotion(MotionEvents event);
+      MotionEvents GetMotionInfo();
     };
   }
 }

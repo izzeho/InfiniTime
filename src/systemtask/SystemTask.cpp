@@ -271,6 +271,17 @@ void SystemTask::Work() {
           }
           break;
         }
+        case Messages::MotionWakeUp: {
+          auto event = motionSensor.GetMotionInfo();
+          if (event != Pinetime::Drivers::MotionEvents::None &&
+              ((event == Pinetime::Drivers::MotionEvents::DoubleTap &&
+                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
+               (event == Pinetime::Drivers::MotionEvents::SingleTap &&
+                settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
+            GoToRunning();
+          }
+          break;
+        }
         case Messages::GoToSleep:
           if (doNotGoToSleep) {
             break;
@@ -385,11 +396,7 @@ void SystemTask::Work() {
 
           // Double Tap needs the touch screen to be in normal mode
           if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
-            // REPORT and GESTURE mode sensors must be normal mode for single tap as well
-            #if !defined(DRIVER_TOUCH_DYNAMIC)
-              if (!settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap))
-            #endif
-              { touchPanel.Sleep(); }
+            touchPanel.Sleep();
           }
 
           isSleeping = true;
@@ -553,6 +560,18 @@ void SystemTask::OnTouchEvent() {
     if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
         settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
       PushMessage(Messages::TouchWakeUp);
+    }
+  }
+}
+
+void SystemTask::OnMotionEvent() {
+  if (isGoingToSleep) {
+    return;
+  }
+  if (isSleeping && !isWakingUp) {
+    if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap) or
+        settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) {
+      PushMessage(Messages::MotionWakeUp);
     }
   }
 }
