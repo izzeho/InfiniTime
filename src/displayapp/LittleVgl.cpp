@@ -176,10 +176,11 @@ void LittleVgl::FlushDisplay(const lv_area_t* area, lv_color_t* color_p) {
   lv_disp_flush_ready(&disp_drv);
 }
 
-void LittleVgl::SetNewTouchPoint(uint16_t x, uint16_t y, bool contact) {
+void LittleVgl::SetNewTouchPoint(uint16_t x, uint16_t y, bool contact, bool single_event) {
   tap_x = x;
   tap_y = y;
   tapped = contact;
+  tap_single_event = single_event;
 }
 
 bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
@@ -187,6 +188,12 @@ bool LittleVgl::GetTouchPadInfo(lv_indev_data_t* ptr) {
   ptr->point.y = tap_y;
   if (tapped) {
     ptr->state = LV_INDEV_STATE_PR;
+    if (tap_single_event) {
+      // If a tap consists of only a single event, enqueue a synthetic release state update
+      tapped = false;
+      tap_single_event = false;
+      return true;
+    }
   } else {
     ptr->state = LV_INDEV_STATE_REL;
   }
