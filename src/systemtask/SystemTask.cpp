@@ -265,15 +265,16 @@ void SystemTask::Work() {
         case Messages::TouchWakeUp: {
           if (touchHandler.GetNewTouchInfo()) {
             auto gesture = touchHandler.GestureGet();
-            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None and
-                ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap and
-                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) or
-                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap and
+            if (gesture != Pinetime::Drivers::Cst816S::Gestures::None &&
+                ((gesture == Pinetime::Drivers::Cst816S::Gestures::DoubleTap &&
+                  settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::DoubleTap)) ||
+                 (gesture == Pinetime::Drivers::Cst816S::Gestures::SingleTap &&
                   settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::SingleTap)))) {
               GoToRunning();
             }
           }
-        } break;
+          break;
+        }
         case Messages::GoToSleep:
           if (doNotGoToSleep) {
             break;
@@ -401,7 +402,8 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours && alarmController.State() != AlarmController::AlarmState::Alerting) {
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::Hours &&
+              alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (isSleeping && !isWakingUp) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
@@ -411,7 +413,8 @@ void SystemTask::Work() {
           break;
         case Messages::OnNewHalfHour:
           using Pinetime::Controllers::AlarmController;
-          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours && alarmController.State() != AlarmController::AlarmState::Alerting) {
+          if (settingsController.GetChimeOption() == Controllers::Settings::ChimesOption::HalfHours &&
+              alarmController.State() != AlarmController::AlarmState::Alerting) {
             if (isSleeping && !isWakingUp) {
               GoToRunning();
               displayApp.PushMessage(Pinetime::Applications::Display::Messages::Clock);
@@ -441,7 +444,7 @@ void SystemTask::Work() {
           displayApp.PushMessage(Pinetime::Applications::Display::Messages::ShowPairingKey);
           break;
         case Messages::BleRadioEnableToggle:
-          if(settingsController.GetBleRadioEnabled()) {
+          if (settingsController.GetBleRadioEnabled()) {
             nimbleController.EnableRadio();
           } else {
             nimbleController.DisableRadio();
