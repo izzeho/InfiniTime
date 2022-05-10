@@ -438,6 +438,7 @@ list(APPEND SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/AccelerationSensor.cpp
         drivers/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
@@ -505,6 +506,7 @@ list(APPEND RECOVERY_SOURCE_FILES
         drivers/DebugPins.cpp
         drivers/InternalFlash.cpp
         drivers/Hrs3300.cpp
+        drivers/AccelerationSensor.cpp
         drivers/Bma421.cpp
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
@@ -618,6 +620,7 @@ set(INCLUDE_FILES
         drivers/InternalFlash.h
         drivers/Hrs3300.h
         drivers/PinMap.h
+        drivers/AccelerationSensor.h
         drivers/Bma421.h
         drivers/Bma421_C/bma4.c
         drivers/Bma421_C/bma423.c
