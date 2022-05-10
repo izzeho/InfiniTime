@@ -648,6 +648,7 @@ set(INCLUDE_FILES
         components/timer/TimerController.h
         components/alarm/AlarmController.h
         drivers/Cst816s.h
+        drivers/Cst816s_registers.h
         FreeRTOS/portmacro.h
         FreeRTOS/portmacro_cmsis.h
         libs/date/includes/date/tz.h
