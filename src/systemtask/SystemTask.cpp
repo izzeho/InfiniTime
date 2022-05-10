@@ -468,11 +468,6 @@ void SystemTask::UpdateMotion() {
     return;
   }
 
-  if (state == SystemTaskState::Sleeping && !(settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) ||
-                                              settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::Shake))) {
-    return;
-  }
-
   if (stepCounterMustBeReset) {
     motionSensor.ResetStepCounter();
     stepCounterMustBeReset = false;
@@ -481,7 +476,8 @@ void SystemTask::UpdateMotion() {
   auto motionValues = motionSensor.Process();
 
   motionController.IsSensorOk(motionSensor.IsInitialized());
-  motionController.Update(motionValues.x, motionValues.y, motionValues.z, motionValues.steps);
+  motionController
+    .Update(motionValues.steps, motionValues.x, motionValues.y, motionValues.z, motionValues.samples, motionValues.samples_length);
 
   if (settingsController.isWakeUpModeOn(Pinetime::Controllers::Settings::WakeUpMode::RaiseWrist) &&
       motionController.Should_RaiseWake(state == SystemTaskState::Sleeping)) {
