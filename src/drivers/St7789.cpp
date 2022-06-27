@@ -21,7 +21,10 @@ void St7789::Init() {
   MemoryDataAccessControl();
   ColumnAddressSet();
   RowAddressSet();
+// P8B Mirrored version does not need display inversion.
+#ifndef DRIVER_DISPLAY_MIRROR
   DisplayInversionOn();
+#endif
   NormalModeOn();
   SetVdv();
   DisplayOn();
@@ -62,7 +65,12 @@ void St7789::ColMod() {
 
 void St7789::MemoryDataAccessControl() {
   WriteCommand(static_cast<uint8_t>(Commands::MemoryDataAccessControl));
+// P8B Mirrored version sets MX bit high in MADCTL register to flip about vertical axis.
+#ifdef DRIVER_DISPLAY_MIRROR
+  WriteData(0x40); // MY(0) MX(1) MV(0) ML(0) RGB(0) 0 0 0
+#else
   WriteData(0x00);
+#endif
 }
 
 void St7789::ColumnAddressSet() {
