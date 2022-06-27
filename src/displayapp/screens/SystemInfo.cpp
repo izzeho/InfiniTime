@@ -146,7 +146,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         "#808080 Backlight# %s\n"
                         "#808080 Last reset# %s\n"
                         "#808080 Accel.# %s\n"
-                        "#808080 Touch.# %x.%x.%x\n",
+                        "#808080 Touch.# %x.%x.%x\n"
+                        "#808080 Model# %s",
                         dateTimeController.Day(),
                         static_cast<uint8_t>(dateTimeController.Month()),
                         dateTimeController.Year(),
@@ -164,7 +165,8 @@ std::unique_ptr<Screen> SystemInfo::CreateScreen2() {
                         ToString(motionController.DeviceType()),
                         touchPanel.GetChipId(),
                         touchPanel.GetVendorId(),
-                        touchPanel.GetFwVersion());
+                        touchPanel.GetFwVersion(),
+                        TARGET_DEVICE_NAME);
   lv_obj_align(label, lv_scr_act(), LV_ALIGN_CENTER, 0, 0);
   return std::make_unique<Screens::Label>(1, 5, app, label);
 }
